@@ -60,7 +60,8 @@ jobs:
 
       - name: Build modified models and everything downstream, on fixtures
         working-directory: dbt
-        run: dbt build --select +state:modified+ --state /tmp/state --vars 'use_fixtures: true'
+        run: |
+          dbt build --select +state:modified+ --state /tmp/state --vars 'use_fixtures: true'
 
       - name: Compare metrics to baseline
         run: python ci/compare_metrics.py
