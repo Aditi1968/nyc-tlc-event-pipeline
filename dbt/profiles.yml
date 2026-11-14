@@ -1,0 +1,12 @@
+tlc:
+  target: default
+  outputs:
+    default:
+      type: postgres
+      host: "{{ env_var('PGHOST', 'localhost') }}"
+      port: "{{ env_var('PGPORT', '5432') | int }}"
+      dbname: "{{ env_var('PGDATABASE', 'tlc') }}"
+      user: "{{ env_var('PGUSER', 'tlc') }}"
+      password: "{{ env_var('PGPASSWORD', 'tlc') }}"
+      schema: "{{ env_var('DBT_SCHEMA', 'marts') }}"
+      threads: 4

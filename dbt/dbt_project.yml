@@ -1,0 +1,25 @@
+name: tlc
+version: "1.0.0"
+profile: tlc
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+
+vars:
+  use_fixtures: false # true in CI: models read the seed instead of curated_trips
+
+models:
+  tlc:
+    +materialized: table
+
+seeds:
+  tlc:
+    fixture_trips:
+      +column_types:
+        stable_id: text
+        pickup_ts: timestamp
+        dropoff_ts: timestamp
+        trip_distance: double precision
+        pu_location_id: bigint
+        fare_amount: numeric(12,2)
+        total_amount: numeric(12,2)

@@ -1,0 +1,5 @@
+pyarrow
+confluent-kafka
+psycopg2-binary
+pyspark==3.5.3
+pytest

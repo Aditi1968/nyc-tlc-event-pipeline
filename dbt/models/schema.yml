@@ -1,0 +1,17 @@
+version: 2
+
+sources:
+  - name: tlc
+    schema: public
+    tables:
+      - name: curated_trips
+
+models:
+  - name: stg_trips
+    columns:
+      - name: stable_id
+        tests: [unique, not_null]
+  - name: daily_trip_metrics
+    columns:
+      - name: event_date
+        tests: [unique, not_null]

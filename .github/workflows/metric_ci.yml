@@ -1,0 +1,66 @@
+name: metric-ci
+
+# Fails a PR when a dbt/SQL change moves trip-volume or fare metrics on the
+# deterministic fixtures. Runs against a throwaway Postgres service container:
+# no cloud account, no secrets, no cost.
+on:
+  pull_request:
+    paths: ["dbt/**", "ci/**", "scripts/merge.py", ".github/workflows/metric_ci.yml"]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: metric-ci-${{ github.event.number }}
+  cancel-in-progress: true
+
+env:
+  PGHOST: localhost
+  PGPORT: "5432"
+  PGDATABASE: tlc
+  PGUSER: tlc
+  PGPASSWORD: tlc # throwaway CI database
+  DBT_PROFILES_DIR: ${{ github.workspace }}/dbt
+  DBT_SCHEMA: ci_pr_${{ github.event.number }} # isolated per PR
+  PYTHONPATH: scripts
+
+jobs:
+  metric-ci:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: tlc
+          POSTGRES_USER: tlc
+          POSTGRES_PASSWORD: tlc
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U tlc" --health-interval 5s
+          --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements-dbt.txt
+      - run: pip install -r requirements-dbt.txt
+
+      - name: Manifest of the base branch (state to compare against)
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          git worktree add /tmp/base "origin/$BASE_REF"
+          cd /tmp/base/dbt
+          dbt parse --vars 'use_fixtures: true' --target-path /tmp/state
+
+      - name: Build modified models and everything downstream, on fixtures
+        working-directory: dbt
+        run: dbt build --select +state:modified+ --state /tmp/state --vars 'use_fixtures: true'
+
+      - name: Compare metrics to baseline
+        run: python ci/compare_metrics.py
