@@ -1,6 +1,6 @@
 {
   "daily_trip_metrics": [
-    {"event_date": "2024-01-01", "trip_count": "3", "paid_trip_count": "2", "total_fare": "19.5", "total_distance": "4"},
-    {"event_date": "2024-01-02", "trip_count": "3", "paid_trip_count": "2", "total_fare": "28.25", "total_distance": "8.5"}
+    {"event_date": "2024-01-01", "trip_count": "3", "paid_trip_count": "2", "total_fare": "19.5", "avg_paid_fare": "9.75", "total_distance": "4"},
+    {"event_date": "2024-01-02", "trip_count": "3", "paid_trip_count": "2", "total_fare": "28.25", "avg_paid_fare": "14.13", "total_distance": "8.5"}
   ]
 }
