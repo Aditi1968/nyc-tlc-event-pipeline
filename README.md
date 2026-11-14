@@ -109,9 +109,10 @@ All measured on one laptop (Docker Desktop, 8 GB VM, Spark local mode), 14 Nov 2
 | Before | 2 | 311 MB | 25.5 to 26.3 s |
 | After `repartition("PULocationID")` | 1 | 151 MB | 21.1 to 22.9 s |
 
-**Metric CI (same steps as the workflow, run locally; not yet run on GitHub Actions)**
+**Metric CI**
 
-| Case | Outcome |
-|---|---|
-| Edit that does not change metrics | passes, about 41 s for state compare + build + compare |
-| Edit counting unpaid trips as paid | fails, reporting `paid_trip_count: got 3, expected 2` for both fixture dates |
+| Case | Where | Outcome |
+|---|---|---|
+| PR adding a metric column with its baseline (PR #1) | GitHub Actions | passes; job took 49 s, building the modified model in schema `ci_pr_1` |
+| Edit that does not change metrics | local, same steps | passes |
+| Edit counting unpaid trips as paid | local, same steps | fails, reporting `paid_trip_count: got 3, expected 2` for both fixture dates |
